@@ -153,8 +153,7 @@ grids:
   
   utm33_sb:
     srs: EPSG:25833
-    srs: EPSG:25833
-    bbox: [-2500000, 3500000, 3045984, 9045984] #Begrenser ut resultatet til Jan Mayen-området
+    bbox: [300000, 8400000, 950000, 9050000] #Begrenser ut resultatet til Svalbard-området
     origin: nw
     tile_size: [256,256]
     res:
