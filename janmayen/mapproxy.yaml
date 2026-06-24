@@ -89,16 +89,10 @@ globals:
 
 ################################################ Kommandoer for kjøring av MapProxy i Docker container #######################################################################################
 #
-# Kjøring: docker run --rm -it -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
-#
-# Testing: docker run --rm -it -p 8080:8080 -v C:\GIS\Mapproxy\janmayen:/mapproxy kartoza/mapproxy 
-# 
-# Kjører på Port 8081: docker run --rm -it -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
-# 
 # Aktuell seeding: docker run --rm -it -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml
+#
 # Aktuell oppstart: docker run -d --name mapproxy_janmayen -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy
 #
-# Kjøring med fast navn og port: docker run --rm -it -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy --name mapproxy_janmayen kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
 # 
 # For å stoppe containeren: docker stop mapproxy_janmayen
 #
