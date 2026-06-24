@@ -30,7 +30,7 @@ services:
 layers:
   - name: bilde
     title: Bilde (samlet)
-    sources: [svalbard_cache, janmayen_cache, nib_cache]
+    sources: [svalbard_cache, bjornoya_cache, janmayen_cache, nib_cache]
 
 caches:
   svalbard_cache:
@@ -45,6 +45,9 @@ caches:
   nib_cache:
     grids: [utm33_nib]  
     sources: [nib]
+    coverage:
+      bbox: [-150000, 6350000, 1150000, 8000000]
+      srs: EPSG:25833
     meta_size: [1, 1]
     meta_buffer: 0
     cache:
@@ -53,6 +56,8 @@ caches:
     format: image/jpeg
     request_format: image/jpeg
 
+
+    
   janmayen_cache:
     grids: [utm33_jm]  #OBS egen definert grid.
     sources: [janmayen]
@@ -64,6 +69,16 @@ caches:
     format: image/jpeg
     request_format: image/jpeg
 
+  bjornoya_cache:
+    grids: [utm33_bo]  #OBS egen definert grid.
+    sources: [bjornoeya]
+    meta_size: [1, 1]
+    meta_buffer: 0
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/bjornoeya
+    format: image/jpeg
+    request_format: image/jpeg
 
 sources:
 
@@ -202,7 +217,7 @@ globals:
       #
       # Kjører scriptet: docker run --rm -it -p 8080:8080-v C:\GIS\mapproxy:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
       #
-      # Kjøring med fast navn og port: docker run --rm -it -p 8080:8080-v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+      # Kjøring med fast navn og port: docker run --rm -it -p 8080:8080 -v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
       #
       # Kjøring uten å bygge cache på nytt: docker run -d -p 8080:8080 -v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy
       #

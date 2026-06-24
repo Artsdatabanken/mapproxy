@@ -8,7 +8,7 @@
 
 coverages:
   svalbard:
-    bbox: [359284.2, 8478284.1, 883168.9, 8983527.5]
+    bbox: [300000, 8400000, 950000, 9050000]
     srs: EPSG:25833
 
   bjornoeya:
@@ -20,7 +20,7 @@ coverages:
     srs: EPSG:25829
 
   nib:
-    bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1]
+    bbox: [-150000, 6350000, 1150000, 8000000]
     srs: EPSG:25833
 
 
@@ -31,7 +31,7 @@ seeds:
     levels: [3,4,5]
 
   bjornoeya_seed:
-    caches: [svalbard_cache]
+    caches: [bjornoya_cache]
     coverages: [bjornoeya]
     levels: [4,5]
 
