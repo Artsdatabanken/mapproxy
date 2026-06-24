@@ -93,7 +93,7 @@ sources:
 
 grids:
 
-  utm33_nib:
+  utm33_nib: #Denne bør kanskje justeres, nå er den satt til Tiles i arcgis, men denne kalles mot en WMS uten tiles.
     srs: EPSG:25833
     bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1] #Begrenser ut resultatet til Fastlands-Norge-området
     origin: nw
