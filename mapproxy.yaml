@@ -18,7 +18,6 @@
 # Bruk http://localhost:8080/service?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities for å legge til tjenesten i QGIS, og velg laget "Bilde (samlet)" for å se ortofoto/satellittbildene fra NPI og Geonorge samlet i en tjeneste.
 ############################################################################################################################################
 
-
 services:
   wmts:
   tms:
@@ -27,10 +26,28 @@ services:
       title: Bilde samlet tjeneste
       abstract: Sammenslått ortofoto/satellitt fra NPI + Geonorge
     srs: ['EPSG:25833']
+
 layers:
   - name: bilde
     title: Bilde (samlet)
-    sources: [svalbard_cache, bjornoya_cache, janmayen_cache, nib_cache]
+    layers:
+
+      - name: svalbard
+        sources: [svalbard_cache]
+        coverage: svalbard
+
+      - name: bjornoya
+        sources: [bjornoya_cache]
+        coverage: bjornoeya
+
+      - name: janmayen
+        sources: [janmayen_cache]
+        coverage: janmayen
+
+      - name: nib
+        sources: [nib_cache]
+        coverage: nib
+
 
 caches:
   svalbard_cache:
@@ -42,14 +59,27 @@ caches:
     format: image/jpeg
     request_format: image/jpeg
 
+  bjornoya_cache:
+    grids: [utm33_sb]
+    sources: [svalbard]
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/bjornoya
+    format: image/jpeg
+    request_format: image/jpeg
+
+  janmayen_cache:
+    grids: [utm33_jm]
+    sources: [janmayen]
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/janmayen
+    format: image/jpeg
+    request_format: image/jpeg
+
   nib_cache:
-    grids: [utm33_nib]  
+    grids: [utm33_nib]
     sources: [nib]
-    coverage:
-      bbox: [-150000, 6350000, 1150000, 8000000]
-      srs: EPSG:25833
-    meta_size: [1, 1]
-    meta_buffer: 0
     cache:
       type: file
       directory: /mapproxy/cache_data/nib
@@ -57,103 +87,50 @@ caches:
     request_format: image/jpeg
 
 
-    
-  janmayen_cache:
-    grids: [utm33_jm]  #OBS egen definert grid.
-    sources: [janmayen]
-    meta_size: [1, 1]
-    meta_buffer: 0
-    cache:
-      type: file
-      directory: /mapproxy/cache_data/janmayen
-    format: image/jpeg
-    request_format: image/jpeg
-
-  bjornoya_cache:
-    grids: [utm33_bo]  #OBS egen definert grid.
-    sources: [bjornoeya]
-    meta_size: [1, 1]
-    meta_buffer: 0
-    cache:
-      type: file
-      directory: /mapproxy/cache_data/bjornoeya
-    format: image/jpeg
-    request_format: image/jpeg
-
 sources:
-
-  janmayen:
-    type: arcgis
-    req:
-      url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Satellitt_JanMayen_WMTS_25829/MapServer
-
 
   svalbard:
     type: arcgis
     req:
       url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Ortofoto_Svalbard_WMTS_25833/MapServer
 
+  janmayen:
+    type: arcgis
+    req:
+      url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Satellitt_JanMayen_WMTS_25829/MapServer
 
   nib:
     type: wms
     req:
       url: https://wms.geonorge.no/skwms1/wms.nib
       layers: nib
-      transparent: true
       format: image/jpeg
-    coverage:
-      bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1]
-      srs: EPSG:25833
+
+
+coverages:
+
+  svalbard:
+    bbox: [300000, 8400000, 950000, 9050000]
+    srs: EPSG:25833
+
+  bjornoeya:
+    bbox: [611705.0, 8252941.4, 628136.7, 8274274.4]
+    srs: EPSG:25833
+
+  janmayen:
+    bbox: [-400000, 8000000, -250000, 8100000]
+    srs: EPSG:25833
+
+  nib:
+    bbox: [-150000, 6350000, 1150000, 8000000]
+    srs: EPSG:25833
 
 
 grids:
 
-  utm33_nib: #Denne bør kanskje justeres, nå er den satt til Tiles i arcgis, men denne kalles mot en WMS uten tiles.
-    srs: EPSG:25833
-    bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1] #Begrenser ut resultatet til Fastlands-Norge-området
-    origin: nw
-    tile_size: [256,256]
-    res:
-      - 21674.7100160867
-      - 10837.35500804335
-      - 5418.677504021675
-      - 2719.92210651088
-      - 1354.6693760054188
-      - 677.3346880027094
-      - 338.6673440013547
-      - 169.33367200067735
-      - 84.66683600033868
-      - 42.33341800016934
-      - 21.16670900008467
-      - 10.583354500042335
-      - 5.291677250021167
-      - 2.6458386250105836
-
-  utm33_bo:
-    srs: EPSG:25829
-    bbox: [611705.0, 8252941.4, 628136.7, 8274274.4] #Begrenser ut resultatet til Jan Mayen-området
-    origin: nw
-    tile_size: [256,256]
-    res:
-      - 21674.7100160867
-      - 10837.35500804335
-      - 5418.677504021675
-      - 2719.92210651088
-      - 1354.6693760054188
-      - 677.3346880027094
-      - 338.6673440013547
-      - 169.33367200067735
-      - 84.66683600033868
-      - 42.33341800016934
-      - 21.16670900008467
-      - 10.583354500042335
-      - 5.291677250021167
-      - 2.6458386250105836
-  
-  
   utm33_sb:
     srs: EPSG:25833
-    bbox: [300000, 8400000, 950000, 9050000] #Begrenser ut resultatet til Svalbard-området
+    bbox: [-2500000, 3500000, 3045984, 9045984]
     origin: nw
     tile_size: [256,256]
     res:
@@ -171,12 +148,31 @@ grids:
       - 10.583354500042335
       - 5.291677250021167
       - 2.6458386250105836
-
-#Antagelig ikke nødvendig å definere flere nivåer enn dette, da ArcGIS-tjenesten for Jan Mayen kun har nivåene 0-13.
 
   utm33_jm:
     srs: EPSG:25833
-    bbox: [-400000, 8000000, -250000, 8100000] #Begrenser ut resultatet til Jan Mayen-området
+    bbox: [-400000, 8000000, -250000, 8100000]
+    origin: nw
+    tile_size: [256,256]
+    res:
+      - 21674.7100160867
+      - 10837.35500804335
+      - 5418.677504021675
+      - 2719.92210651088
+      - 1354.6693760054188
+      - 677.3346880027094
+      - 338.6673440013547
+      - 169.33367200067735
+      - 84.66683600033868
+      - 42.33341800016934
+      - 21.16670900008467
+      - 10.583354500042335
+      - 5.291677250021167
+      - 2.6458386250105836
+
+  utm33_nib:
+    srs: EPSG:25833
+    bbox: [-150000, 6350000, 1150000, 8000000]
     origin: nw
     tile_size: [256,256]
     res:
@@ -201,13 +197,16 @@ globals:
     base_dir: '/mapproxy/cache_data'
     lock_dir: '/mapproxy/locks'
     max_tile_limit: 500
+
   image:
     resampling_method: bicubic
     jpeg_quality: 85
+
   http:
     client_timeout: 60
     headers:
       User-Agent: MapProxy
+
 
 
       ########################################################### Kommandoer for kjøring i terminalvinduet i docker #####################################################################
@@ -219,5 +218,6 @@ globals:
       # Kjøring med fast navn og port: docker run --rm -it -p 8080:8080 -v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
       #
       # Kjøring uten å bygge cache på nytt: docker run -d -p 8080:8080 -v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy
+      # Kjøring av ny seed i allerede kjørende container: docker exec -it mapproxy_bilde mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
       #
       ###################################################################################################################################################################################
