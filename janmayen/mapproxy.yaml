@@ -40,25 +40,25 @@ layers:
 
 caches:
   janmayen_cache:
-    grids: [utm33_jm]
+    grids: [utm33_jm]  #OBS egen definert grid.
     sources: [janmayen]
     cache:
       type: file
     format: image/jpeg
     request_format: image/jpeg
 
-
+# Viktig å kjøre fra arcgis for at det skal fungere, og ikke fra WMTS. 
 sources:
   janmayen:
     type: arcgis
     req:
       url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Satellitt_JanMayen_WMTS_25829/MapServer
 
-
+#Grid definert til nivåene i ArcGIS-tjenesten med alle nivåene fra 0 til 13. OBS: Dette er en reprojisering fra EPSG:25829 til EPSG:25833, og det er derfor viktig å bruke riktig grid for å få riktig reprojisering.
 grids:
   utm33_jm:
     srs: EPSG:25833
-    bbox: [-400000, 8000000, -250000, 8100000]
+    bbox: [-400000, 8000000, -250000, 8100000] #Begrenser ut resultatet til Jan Mayen-området
     origin: nw
     tile_size: [256,256]
     res:

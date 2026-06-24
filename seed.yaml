@@ -43,7 +43,7 @@ seeds:
   nib_seed:
     caches: [nib_cache]
     coverages: [nib]
-    levels: [3,4,5]
+    levels: [3,4]
 
   
 
