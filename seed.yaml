@@ -1,0 +1,52 @@
+#############################################################################################
+# Seeding configuration bildet (samlet) layer in MapProxy
+# This file is used to define the seeding process for the Jan Mayen layer in MapProxy.
+#
+# Laget av: Kristian Julien, 2024-06-17  Artsdatabanken
+#############################################################################################
+
+
+coverages:
+  svalbard:
+    bbox: [359284.2, 8478284.1, 883168.9, 8983527.5]
+    srs: EPSG:25833
+
+  bjornoeya:
+    bbox: [611705.0, 8252941.4, 628136.7, 8274274.4]
+    srs: EPSG:25833
+
+  janmayen:
+    bbox: [498650.7, 7855594.8, 536887.5, 7899187.6]
+    srs: EPSG:25829
+
+  nib:
+    bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1]
+    srs: EPSG:25833
+
+
+seeds:
+  svalbard_seed:
+    caches: [svalbard_cache]
+    coverages: [svalbard]
+    levels: [3,4,5]
+
+  bjornoeya_seed:
+    caches: [svalbard_cache]
+    coverages: [bjornoeya]
+    levels: [4,5]
+
+  janmayen_seed:
+    caches: [janmayen_cache]
+    coverages: [janmayen]
+    levels: [3,4,5]
+
+  nib_seed:
+    caches: [nib_cache]
+    coverages: [nib]
+    levels: [3,4,5]
+
+  
+
+
+
+

@@ -1,0 +1,24 @@
+services:
+  demo:
+  wms:
+    md:
+      title: MapProxy WMS
+
+layers:
+  - name: osm
+    title: OpenStreetMap
+    sources: [osm_cache]
+
+caches:
+  osm_cache:
+    grids: [webmercator]
+    sources: [osm_source]
+
+sources:
+  osm_source:
+    type: tile
+    url: https://tile.openstreetmap.org/%(z)s/%(x)s/%(y)s.png
+
+grids:
+  webmercator:
+    base: GLOBAL_WEBMERCATOR

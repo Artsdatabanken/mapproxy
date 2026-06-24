@@ -1,0 +1,165 @@
+#########################################################################################################################################
+# MapProxy configuration file
+# Bruker Kartoza sin MapProxy image server i en Docker container, og har satt opp en cache for å samle inn data fra flere WMS-tjenester. 
+# Dette gjør at vi kan tilby en samlet tjeneste for ortofoto/satellittbilder fra NPI og Geonorge.  
+# For mer informasjon om MapProxy, se https://mapproxy.org/
+# For mer informasjon om caching og seeding i MapProxy, se https://mapproxy.org/docs/latest/caching.html
+# For å kjøre MapProxy i en Docker container, se nederst i denne filen for kommandoer.
+# 
+# Det er aktuel å legge til flere tjenester i samme MapProxy-konfigurasjon, og det er også mulig å sette opp flere caches for 
+# forskjellige områder eller datakilder. I dette eksempelet har vi satt opp tre caches for Svalbard, Jan Mayen 
+# og NIB, men det er fullt mulig å legge til flere caches for andre områder eller datakilder. Det viktigste er å sørge 
+# for at hver cache har riktig konfigurasjon for sin datakilde og område, og at de er koblet til riktig lag i MapProxy-konfigurasjonen.
+# Alternativt kan de kjøres i seperate filer og med forskjellig sti artstdatabanken.no/mappproxy/bilde og artsdatabanken.no/mappproxy/janmayen 
+#for  å skille mellom de forskjellige tjenestene.
+#
+# Laget av Kristian Julien, 2024-06-17  Artsdatabanken
+#
+# Bruk http://localhost:8080/service?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities for å legge til tjenesten i QGIS, og velg laget "Bilde (samlet)" for å se ortofoto/satellittbildene fra NPI og Geonorge samlet i en tjeneste.
+############################################################################################################################################
+
+
+services:
+  wmts:
+  tms:
+  wms:
+    md:
+      title: Bilde samlet tjeneste
+      abstract: Sammenslått ortofoto/satellitt fra NPI + Geonorge
+    srs: ['EPSG:25833']
+layers:
+  - name: bilde
+    title: Bilde (samlet)
+    sources: [svalbard_cache, janmayen_cache, nib_cache]
+
+caches:
+  svalbard_cache:
+    grids: [utm33]
+    sources: [svalbard]
+    meta_size: [1, 1]
+    meta_buffer: 0
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/svalbard
+    format: image/jpeg
+    request_format: image/jpeg
+
+  nib_cache:
+    grids: [utm33]
+    sources: [nib]
+    meta_size: [1, 1]
+    meta_buffer: 0
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/nib
+    format: image/jpeg
+    request_format: image/jpeg
+
+  janmayen_cache:
+    grids: [utm29]
+    sources: [janmayen]
+    meta_size: [1, 1]
+    meta_buffer: 0
+    cache:
+      type: file
+      directory: /mapproxy/cache_data/janmayen
+    format: image/jpeg
+    request_format: image/jpeg
+
+
+sources:
+  
+  janmayen:
+    type: wms
+    req:
+      url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Satellitt_JanMayen_WMTS_25829/MapServer/WMSServer
+      layers: 0
+      transparent: false
+      format: image/png
+    supported_srs: ['EPSG:25829']
+    coverage:
+      bbox: [498650.7, 7855594.8, 536887.5, 7899187.6]
+      srs: EPSG:25829
+
+
+  svalbard:
+    type: arcgis
+    req:
+      url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Ortofoto_Svalbard_WMTS_25833/MapServer
+    coverage:
+      bbox: [359284.2, 8478284.1, 883168.9, 8983527.5]    
+      srs: EPSG:25833
+
+  nib:
+    type: wms
+    req:
+      url: https://wms.geonorge.no/skwms1/wms.nib
+      layers: nib
+      transparent: true
+      format: image/png
+    coverage:
+      bbox: [-141506.8, 6397180.2, 1137848.4, 7984050.1]
+      srs: EPSG:25833
+
+
+grids:
+  utm33:
+    srs: EPSG:25833
+    bbox: [-2500000, 3500000, 3045984, 9045984]
+    origin: nw
+    tile_size: [256, 256]
+    res:
+      - 1222.99245256282
+      - 611.49622628141
+      - 305.748113140705
+      - 152.8740565703525
+      - 76.43702828517625
+      - 38.21851414258813
+
+
+  utm29:
+    srs: EPSG:25829
+    bbox: [-1500000, 6000000, 1500000, 9000000]
+    origin: nw
+    tile_size: [256, 256]
+    res:
+      - 4096
+      - 2048
+      - 1024
+      - 512
+      - 256
+      - 128
+      - 64
+      - 32
+      - 16
+      - 8
+      - 4
+      - 2
+      - 1
+      - 0.5
+
+globals:
+  cache:
+    base_dir: '/mapproxy/cache_data'
+    lock_dir: '/mapproxy/locks'
+    max_tile_limit: 500
+  image:
+    resampling_method: bicubic
+    jpeg_quality: 85
+  http:
+    client_timeout: 60
+    headers:
+      User-Agent: MapProxy
+
+
+      ########################################################### Kommandoer for kjøring i terminalvinduet i docker #####################################################################
+      #
+      # Kjører scriptet: docker run --rm -it -v C:\GIS\mapproxy:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+      #
+      # Kjører scriptet: docker run --rm -it -p 8080:8080-v C:\GIS\mapproxy:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+      #
+      # Kjøring med fast navn og port: docker run --rm -it -p 8080:8080-v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+      #
+      # Kjøring uten å bygge cache på nytt: docker run -d -p 8080:8080 -v C:\GIS\mapproxy:/mapproxy --name mapproxy_bilde kartoza/mapproxy
+      #
+      ###################################################################################################################################################################################

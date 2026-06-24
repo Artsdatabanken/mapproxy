@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "Svalbard",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::25833" } },
+"xy_coordinate_resolution": 0.1,
+"bbox": [ 359284.2, 8478284.1, 883168.9, 8983527.5 ],                                                                              
+"features": [
+{ "type": "Feature", "properties": { "navn": "Svalbard" }, "bbox": [ 359284.2, 8478284.1, 883168.9, 8983527.5 ], "geometry": { "type": "Polygon", "coordinates": [ [ [ 359284.2, 8983527.5 ], [ 883168.9, 8983527.5 ], [ 867098.8, 8478284.1 ], [ 359927.0, 8481498.1 ], [ 359284.2, 8983527.5 ] ] ] } }
+]
+}

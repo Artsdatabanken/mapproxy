@@ -1,0 +1,105 @@
+#############################################  Oppsett for reprojisering av Jan Mayen #######################################################
+#
+# MapProxy configuration file
+# Bruker Kartoza sin MapProxy image server i en Docker container, og har satt opp en cache for å samle inn data fra flere WMS-tjenester. 
+# Dette gjør at vi kan tilby en samlet tjeneste for ortofoto/satellittbilder fra NPI og Geonorge.  
+# For mer informasjon om MapProxy, se https://mapproxy.org/
+# For mer informasjon om caching og seeding i MapProxy, se https://mapproxy.org/docs/latest/caching.html
+# For å kjøre MapProxy i en Docker container, se nederst i denne filen for kommandoer.
+# 
+# Det er aktuel å legge til flere tjenester i samme MapProxy-konfigurasjon, og det er også mulig å sette opp flere caches for 
+# forskjellige områder eller datakilder. I dette eksempelet har vi satt opp tre caches for Svalbard, Jan Mayen 
+# og NIB, men det er fullt mulig å legge til flere caches for andre områder eller datakilder. Det viktigste er å sørge 
+# for at hver cache har riktig konfigurasjon for sin datakilde og område, og at de er koblet til riktig lag i MapProxy-konfigurasjonen.
+# Alternativt kan de kjøres i seperate filer og med forskjellig sti artstdatabanken.no/mappproxy/bilde og artsdatabanken.no/mappproxy/janmayen 
+#for  å skille mellom de forskjellige tjenestene.
+#
+# Laget av Kristian Julien, 2024-06-17  Artsdatabanken
+#
+# Bruk http://localhost:8081/service? for å teste tjenesten etter at den er kjørt i Docker containeren.
+# For å teste tjenesten i QGIS, legg til en WMS-tjeneste med URL http://localhost:8081/service? og velg laget "Jan Mayen".
+#
+############################################################################################################################################
+
+services:
+  wmts:
+    restful: false
+  tms:
+  wms:
+    md:
+      title: Jan Mayen ortofoto (reprojisert)
+      abstract: NP satellittdata reprojisert fra EPSG:25829 til EPSG:25833
+    srs: ['EPSG:25833']
+
+
+layers:
+  - name: janmayen
+    title: Jan Mayen
+    sources: [janmayen_cache]
+
+
+caches:
+  janmayen_cache:
+    grids: [utm33_jm]
+    sources: [janmayen]
+    cache:
+      type: file
+    format: image/jpeg
+    request_format: image/jpeg
+
+
+sources:
+  janmayen:
+    type: arcgis
+    req:
+      url: https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Satellitt_JanMayen_WMTS_25829/MapServer
+
+
+grids:
+  utm33_jm:
+    srs: EPSG:25833
+    bbox: [-400000, 8000000, -250000, 8100000]
+    origin: nw
+    tile_size: [256,256]
+    res:
+      - 21674.7100160867
+      - 10837.35500804335
+      - 5418.677504021675
+      - 2719.92210651088
+      - 1354.6693760054188
+      - 677.3346880027094
+      - 338.6673440013547
+      - 169.33367200067735
+      - 84.66683600033868
+      - 42.33341800016934
+      - 21.16670900008467
+      - 10.583354500042335
+      - 5.291677250021167
+      - 2.6458386250105836
+
+globals:
+  cache:
+    base_dir: '/mapproxy/cache_data'
+    lock_dir: '/mapproxy/locks'
+  image:
+    resampling_method: bicubic
+    jpeg_quality: 85
+  http:
+    client_timeout: 60
+
+################################################ Kommandoer for kjøring av MapProxy i Docker container #######################################################################################
+#
+# Kjøring: docker run --rm -it -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+#
+# Testing: docker run --rm -it -p 8080:8080 -v C:\GIS\Mapproxy\janmayen:/mapproxy kartoza/mapproxy 
+# 
+# Kjører på Port 8081: docker run --rm -it -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+# 
+#docker run --rm -it -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml
+#docker run -d --name mapproxy_janmayen -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy kartoza/mapproxy
+#
+# Kjøring med fast navn og port: docker run --rm -it -p 8081:8080 -v C:\GIS\mapproxy\janmayen:/mapproxy --name mapproxy_janmayen kartoza/mapproxy mapproxy-seed -f /mapproxy/mapproxy.yaml /mapproxy/seed.yaml --concurrency 1
+# 
+# For å stoppe containeren: docker stop mapproxy_janmayen
+#
+###############################################################################################################################################################################################

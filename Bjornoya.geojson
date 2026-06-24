@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "Bjornoya",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::25833" } },
+"xy_coordinate_resolution": 0.1,
+"bbox": [ 611705.0, 8252941.4, 628136.7, 8274274.4 ],                                                                              
+"features": [
+{ "type": "Feature", "properties": { "Navn": "Bjornoya" }, "bbox": [ 611705.0, 8252941.4, 628136.7, 8274274.4 ], "geometry": { "type": "Polygon", "coordinates": [ [ [ 611705.0, 8274274.4 ], [ 628136.7, 8274194.1 ], [ 627976.0, 8253021.8 ], [ 611705.0, 8252941.4 ], [ 611705.0, 8274274.4 ] ] ] } }
+]
+}
